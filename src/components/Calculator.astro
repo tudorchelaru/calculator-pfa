@@ -772,6 +772,9 @@
 		align-items: center;
 		justify-content: center;
 		flex-wrap: wrap;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
 	}
 
 	.currency-usd,
@@ -786,6 +789,9 @@
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 		letter-spacing: 0.5px;
+		flex: 0 1 auto;
+		min-width: 0;
+		box-sizing: border-box;
 	}
 
 	.currency-usd {
@@ -927,6 +933,29 @@
 
 		.praguri-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.currency-equivalents {
+			flex-direction: column;
+			gap: 0.75rem;
+			width: 100%;
+			padding: 0 0.5rem;
+			box-sizing: border-box;
+		}
+
+		.currency-usd,
+		.currency-eur {
+			font-size: 1.2rem;
+			padding: 0.5rem 0.8rem;
+			width: 100%;
+			max-width: 100%;
+			box-sizing: border-box;
+			text-align: center;
+		}
+
+		.result-card.highlight {
+			overflow: hidden;
+			padding: 1.5rem 1rem;
 		}
 	}
 </style>
