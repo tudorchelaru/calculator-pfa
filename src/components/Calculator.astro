@@ -590,13 +590,13 @@
 
 	.exchange-rate-inputs {
 		display: flex;
-		gap: 1rem;
-		align-items: center;
-		flex-wrap: nowrap;
+		flex-direction: column;
+		gap: 0.5rem;
+		align-items: flex-start;
 	}
 
 	.exchange-label {
-		display: inline-flex !important;
+		display: flex !important;
 		flex-direction: row !important;
 		align-items: center;
 		gap: 0.4rem;
@@ -605,10 +605,6 @@
 		font-weight: 500;
 		white-space: nowrap;
 		margin: 0;
-	}
-
-	.exchange-label:last-of-type {
-		margin-left: 30px;
 	}
 
 	.exchange-input {
