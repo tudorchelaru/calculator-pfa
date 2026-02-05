@@ -27,18 +27,23 @@
 		<label for="luni-activitate">
 			<span class="lang-ro">Număr de Luni de Activitate în An</span>
 			<span class="lang-en">Active Months in Tax Year</span>
-			<input 
-				type="number" 
-				id="luni-activitate" 
-				name="luni-activitate"
-				value="12"
-				min="1"
-				max="12"
-				step="1"
-			/>
+			<select id="luni-activitate" name="luni-activitate">
+				<option value="12" selected>12</option>
+				<option value="11">11</option>
+				<option value="10">10</option>
+				<option value="9">9</option>
+				<option value="8">8</option>
+				<option value="7">7</option>
+				<option value="6">6</option>
+				<option value="5">5</option>
+				<option value="4">4</option>
+				<option value="3">3</option>
+				<option value="2">2</option>
+				<option value="1">1</option>
+			</select>
 			<small>
-				<span class="lang-ro">Ex: dacă îți deschizi PFA în februarie, introdu 11 luni.</span>
-				<span class="lang-en">Example: if you open your PFA in February, use 11 months.</span>
+				<span class="lang-ro">Ex: dacă îți deschizi PFA în februarie, selectează 11 luni.</span>
+				<span class="lang-en">Example: if you open your PFA in February, select 11 months.</span>
 			</small>
 		</label>
 
