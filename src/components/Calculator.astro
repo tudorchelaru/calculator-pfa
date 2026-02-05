@@ -23,7 +23,7 @@
 		</div>
 
 		<label for="venit-brut">
-			<span>Venit Brut Anual (RON)</span>
+			<span>Venit Brut Lunar (RON)</span>
 			<input 
 				type="number" 
 				id="venit-brut" 
@@ -31,13 +31,13 @@
 				value="0"
 				min="0"
 				step="100"
-				placeholder="Ex: 100000"
+				placeholder="Ex: 10000"
 			/>
-			<small>Total încasări din activitatea PFA</small>
+			<small>Total încasări lunare din activitatea PFA</small>
 		</label>
 
 		<label for="cheltuieli">
-			<span>Cheltuieli Deductibile (RON)</span>
+			<span>Cheltuieli Deductibile Lunar (RON)</span>
 			<input 
 				type="number" 
 				id="cheltuieli" 
@@ -45,14 +45,14 @@
 				value="0"
 				min="0"
 				step="100"
-				placeholder="Ex: 10000"
+				placeholder="Ex: 1000"
 			/>
-			<small>Costuri necesare desfășurării activității</small>
+			<small>Costuri lunare necesare desfășurării activității</small>
 		</label>
 
 		<div class="info-box">
-			<strong>Venit Net:</strong> <span id="venit-net-preview">0 RON</span>
-			<small>Venit Brut - Cheltuieli Deductibile</small>
+			<strong>Venit Net Anual:</strong> <span id="venit-net-preview">0 RON</span>
+			<small>(Venit Brut Lunar - Cheltuieli Lunare) × 12 luni</small>
 		</div>
 	</div>
 
@@ -81,8 +81,13 @@
 			<span class="value" id="total-taxe">0 RON</span>
 		</div>
 		<div class="result-card net">
-			<span class="label">Venit Net După Taxe</span>
+			<span class="label">Venit Net După Taxe (Anual)</span>
 			<span class="value" id="venit-final">0 RON</span>
+		</div>
+		<div class="result-card final-monthly highlight">
+			<span class="label">💰 Rămâne în Buzunar pe Lună</span>
+			<span class="value" id="venit-lunar-final">0 RON</span>
+			<span class="subtitle">După toate taxele și cheltuielile</span>
 		</div>
 		<div class="result-card rate">
 			<span class="label">Rata Efectivă de Impozitare</span>
@@ -230,9 +235,13 @@
 	function updateCalculations() {
 		const an = parseInt(anSelect.value);
 		const esteSalariat = salariatSelect.value === 'da';
-		const venitBrut = parseFloat(venitBrutInput.value) || 0;
-		const cheltuieli = parseFloat(cheltuieliInput.value) || 0;
-		const venitNet = Math.max(0, venitBrut - cheltuieli);
+		const venitBrutLunar = parseFloat(venitBrutInput.value) || 0;
+		const cheltuieliLunare = parseFloat(cheltuieliInput.value) || 0;
+		
+		// Calculăm anual
+		const venitBrutAnual = venitBrutLunar * 12;
+		const cheltuieliAnuale = cheltuieliLunare * 12;
+		const venitNet = Math.max(0, venitBrutAnual - cheltuieliAnuale);
 
 		// Update preview
 		venitNetPreview.textContent = formatCurrency(venitNet);
@@ -243,10 +252,12 @@
 		const impozitResult = calculImpozit(venitNet, casResult.valoare, cassResult.valoare);
 
 		const totalTaxe = casResult.valoare + cassResult.valoare + impozitResult.valoare;
-		const venitFinal = venitNet - totalTaxe;
+		const venitFinalAnual = venitNet - totalTaxe;
+		const venitFinalLunar = venitFinalAnual / 12;
 		const rataEfectiva = venitNet > 0 ? (totalTaxe / venitNet) * 100 : 0;
 
 		// Update UI
+		(document.getElementById('venit-net-preview') as HTMLElement).textContent = formatCurrency(venitNet);
 		(document.getElementById('venit-net') as HTMLElement).textContent = formatCurrency(venitNet);
 		(document.getElementById('cas') as HTMLElement).textContent = formatCurrency(casResult.valoare);
 		(document.getElementById('cas-detail') as HTMLElement).textContent = casResult.detalii;
@@ -255,7 +266,8 @@
 		(document.getElementById('impozit') as HTMLElement).textContent = formatCurrency(impozitResult.valoare);
 		(document.getElementById('impozit-detail') as HTMLElement).textContent = impozitResult.detalii;
 		(document.getElementById('total-taxe') as HTMLElement).textContent = formatCurrency(totalTaxe);
-		(document.getElementById('venit-final') as HTMLElement).textContent = formatCurrency(venitFinal);
+		(document.getElementById('venit-final') as HTMLElement).textContent = formatCurrency(venitFinalAnual);
+		(document.getElementById('venit-lunar-final') as HTMLElement).textContent = formatCurrency(venitFinalLunar);
 		(document.getElementById('rata-efectiva') as HTMLElement).textContent = `${rataEfectiva.toFixed(2)}%`;
 
 		// Update praguri
@@ -402,6 +414,25 @@
 		grid-column: 1 / -1;
 	}
 
+	.result-card.highlight {
+		background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+		color: white;
+		grid-column: 1 / -1;
+		border: 3px solid #ff9500;
+		box-shadow: 0 8px 24px rgba(255, 149, 0, 0.3);
+	}
+
+	.result-card.highlight .value {
+		font-size: 2.5rem;
+	}
+
+	.result-card.highlight .subtitle {
+		font-size: 0.9rem;
+		opacity: 0.95;
+		margin-top: 0.5rem;
+		font-weight: 500;
+	}
+
 	.result-card .label {
 		font-size: 0.9rem;
 		opacity: 0.9;
@@ -487,7 +518,8 @@
 
 		.result-card.total,
 		.result-card.net,
-		.result-card.rate {
+		.result-card.rate,
+		.result-card.highlight {
 			grid-column: 1;
 		}
 
