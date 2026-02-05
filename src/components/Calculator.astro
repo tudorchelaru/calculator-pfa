@@ -1,167 +1,265 @@
 ---
-// Logica de calcul pentru taxe PFA
-// Sistemul actual din România: CASS, CAS, impozit pe venit
-
-let venitBrut = 0;
-let sistemImpozitare = 'real'; // 'real' sau 'norma'
-let normaVenit = 0;
-
-// Funcții de calcul
-function calculCASS(venit: number): number {
-	const pragCASS = 12 * 6000; // 72,000 RON/an în 2024
-	if (venit <= pragCASS) {
-		return venit * 0.10; // 10% până la prag
-	}
-	return pragCASS * 0.10; // 10% din prag după ce depășește
-}
-
-function calculCAS(venit: number): number {
-	const pragCAS = 12 * 6000; // 72,000 RON/an
-	if (venit <= pragCAS) {
-		return venit * 0.25; // 25% până la prag
-	}
-	return pragCAS * 0.25; // 25% din prag după ce depășește
-}
-
-function calculImpozitReal(venit: number): number {
-	const cass = calculCASS(venit);
-	const cas = calculCAS(venit);
-	const venitImpozabil = venit - cass - cas;
-	return venitImpozabil * 0.10; // 10% impozit pe venit
-}
-
-function calculImpozitNorma(venit: number, norma: number): number {
-	// Pentru sistemul pe normă de venit, calculul este diferit
-	// Simplificat: impozit fix sau procent din norma de venit
-	return norma * 0.10; // Exemplu simplificat
-}
+// Calculator Taxe PFA conform documentației 2025-2026
 ---
 
 <div class="calculator">
 	<div class="input-section">
-		<label for="venit">
-			<span>Venit Brut Lunar (RON)</span>
+		<div class="input-group">
+			<label for="an">
+				<span>An</span>
+				<select id="an" name="an">
+					<option value="2026" selected>2026</option>
+					<option value="2025">2025</option>
+				</select>
+			</label>
+
+			<label for="salariat">
+				<span>Ești salariat?</span>
+				<select id="salariat" name="salariat">
+					<option value="nu" selected>Nu</option>
+					<option value="da">Da</option>
+				</select>
+			</label>
+		</div>
+
+		<label for="venit-brut">
+			<span>Venit Brut Anual (RON)</span>
 			<input 
 				type="number" 
-				id="venit" 
-				name="venit"
+				id="venit-brut" 
+				name="venit-brut"
 				value="0"
 				min="0"
 				step="100"
+				placeholder="Ex: 100000"
 			/>
+			<small>Total încasări din activitatea PFA</small>
 		</label>
 
-		<label for="sistem">
-			<span>Sistem de Impozitare</span>
-			<select id="sistem" name="sistem">
-				<option value="real">Real (CASS + CAS + Impozit)</option>
-				<option value="norma">Normă de Venit</option>
-			</select>
-		</label>
-
-		<label for="norma" id="norma-label" style="display: none;">
-			<span>Normă de Venit (RON)</span>
+		<label for="cheltuieli">
+			<span>Cheltuieli Deductibile (RON)</span>
 			<input 
 				type="number" 
-				id="norma" 
-				name="norma"
+				id="cheltuieli" 
+				name="cheltuieli"
 				value="0"
 				min="0"
 				step="100"
+				placeholder="Ex: 10000"
 			/>
+			<small>Costuri necesare desfășurării activității</small>
 		</label>
+
+		<div class="info-box">
+			<strong>Venit Net:</strong> <span id="venit-net-preview">0 RON</span>
+			<small>Venit Brut - Cheltuieli Deductibile</small>
+		</div>
 	</div>
 
 	<div class="results-section">
 		<div class="result-card">
-			<span class="label">Venit Brut Anual</span>
-			<span class="value" id="venit-anual">0 RON</span>
+			<span class="label">Venit Net Anual</span>
+			<span class="value" id="venit-net">0 RON</span>
 		</div>
 		<div class="result-card">
-			<span class="label">CASS</span>
-			<span class="value" id="cass">0 RON</span>
-		</div>
-		<div class="result-card">
-			<span class="label">CAS</span>
+			<span class="label">CAS (25%)</span>
 			<span class="value" id="cas">0 RON</span>
+			<span class="detail" id="cas-detail"></span>
 		</div>
 		<div class="result-card">
-			<span class="label">Impozit pe Venit</span>
+			<span class="label">CASS (10%)</span>
+			<span class="value" id="cass">0 RON</span>
+			<span class="detail" id="cass-detail"></span>
+		</div>
+		<div class="result-card">
+			<span class="label">Impozit pe Venit (10%)</span>
 			<span class="value" id="impozit">0 RON</span>
+			<span class="detail" id="impozit-detail"></span>
 		</div>
 		<div class="result-card total">
 			<span class="label">Total Taxe</span>
 			<span class="value" id="total-taxe">0 RON</span>
 		</div>
 		<div class="result-card net">
-			<span class="label">Venit Net Anual</span>
-			<span class="value" id="venit-net">0 RON</span>
+			<span class="label">Venit Net După Taxe</span>
+			<span class="value" id="venit-final">0 RON</span>
 		</div>
+		<div class="result-card rate">
+			<span class="label">Rata Efectivă de Impozitare</span>
+			<span class="value" id="rata-efectiva">0%</span>
+		</div>
+	</div>
+
+	<div class="praguri-section">
+		<h3>Praguri pentru anul selectat</h3>
+		<div class="praguri-grid" id="praguri-info"></div>
 	</div>
 </div>
 
 <script>
-	const venitInput = document.getElementById('venit') as HTMLInputElement;
-	const sistemSelect = document.getElementById('sistem') as HTMLSelectElement;
-	const normaInput = document.getElementById('norma') as HTMLInputElement;
-	const normaLabel = document.getElementById('norma-label') as HTMLLabelElement;
+	// Constante pentru salarii minime
+	const SALARIU_MINIM = {
+		2025: 3300,
+		2026: 4050
+	};
 
-	function calculCASS(venit: number): number {
-		const pragCASS = 12 * 6000; // 72,000 RON/an
-		if (venit <= pragCASS) {
-			return venit * 0.10;
+	// Elemente DOM
+	const anSelect = document.getElementById('an') as HTMLSelectElement;
+	const salariatSelect = document.getElementById('salariat') as HTMLSelectElement;
+	const venitBrutInput = document.getElementById('venit-brut') as HTMLInputElement;
+	const cheltuieliInput = document.getElementById('cheltuieli') as HTMLInputElement;
+	const venitNetPreview = document.getElementById('venit-net-preview') as HTMLElement;
+	const praguriInfo = document.getElementById('praguri-info') as HTMLElement;
+
+	// Funcții de calcul conform documentației
+
+	function calculCAS(venitNet: number, an: number): { valoare: number; detalii: string } {
+		const sm = SALARIU_MINIM[an as keyof typeof SALARIU_MINIM];
+		const prag12SM = 12 * sm;
+		const prag24SM = 24 * sm;
+
+		if (venitNet <= prag12SM) {
+			return {
+				valoare: 0,
+				detalii: `Sub 12 SM (${formatNumber(prag12SM)} RON) → CAS = 0`
+			};
 		}
-		return pragCASS * 0.10;
-	}
 
-	function calculCAS(venit: number): number {
-		const pragCAS = 12 * 6000; // 72,000 RON/an
-		if (venit <= pragCAS) {
-			return venit * 0.25;
+		if (venitNet <= prag24SM) {
+			const cas = 0.25 * prag12SM;
+			return {
+				valoare: cas,
+				detalii: `Între 12-24 SM → CAS = 25% × 12 SM = ${formatCurrency(cas)}`
+			};
 		}
-		return pragCAS * 0.25;
+
+		const cas = 0.25 * prag24SM;
+		return {
+			valoare: cas,
+			detalii: `Peste 24 SM (${formatNumber(prag24SM)} RON) → CAS = 25% × 24 SM = ${formatCurrency(cas)} (plafon)`
+		};
 	}
 
-	function calculImpozitReal(venit: number): number {
-		const cass = calculCASS(venit);
-		const cas = calculCAS(venit);
-		const venitImpozabil = venit - cass - cas;
-		return venitImpozabil * 0.10;
+	function calculCASS(venitNet: number, an: number, esteSalariat: boolean): { valoare: number; detalii: string } {
+		const sm = SALARIU_MINIM[an as keyof typeof SALARIU_MINIM];
+		const prag6SM = 6 * sm;
+		const prag60SM = 60 * sm;
+
+		// Sub 6 SM
+		if (venitNet < prag6SM) {
+			if (esteSalariat) {
+				const cass = 0.10 * venitNet;
+				return {
+					valoare: cass,
+					detalii: `Sub 6 SM, salariat → CASS = 10% × venit net = ${formatCurrency(cass)} (fără minim)`
+				};
+			} else {
+				const cassMinim = 0.10 * prag6SM;
+				return {
+					valoare: cassMinim,
+					detalii: `Sub 6 SM, nesalariat → CASS minim = 10% × 6 SM = ${formatCurrency(cassMinim)}`
+				};
+			}
+		}
+
+		// Între 6-60 SM
+		if (venitNet <= prag60SM) {
+			const cass = 0.10 * venitNet;
+			return {
+				valoare: cass,
+				detalii: `Între 6-60 SM → CASS = 10% × venit net = ${formatCurrency(cass)}`
+			};
+		}
+
+		// Peste 60 SM
+		const cassPlafon = 0.10 * prag60SM;
+		return {
+			valoare: cassPlafon,
+			detalii: `Peste 60 SM (${formatNumber(prag60SM)} RON) → CASS plafon = 10% × 60 SM = ${formatCurrency(cassPlafon)}`
+		};
 	}
 
-	function calculImpozitNorma(venit: number, norma: number): number {
-		// Pentru sistemul pe normă, calculul este simplificat
-		return norma * 0.10;
+	function calculImpozit(venitNet: number, cas: number, cass: number): { valoare: number; detalii: string } {
+		const bazaImpozit = Math.max(0, venitNet - cas - cass);
+		const impozit = 0.10 * bazaImpozit;
+
+		if (bazaImpozit === 0) {
+			return {
+				valoare: 0,
+				detalii: `Baza impozit = venit net - CAS - CASS = ${formatNumber(venitNet)} - ${formatNumber(cas)} - ${formatNumber(cass)} = 0 (nu poate fi negativă)`
+			};
+		}
+
+		return {
+			valoare: impozit,
+			detalii: `Baza = ${formatNumber(venitNet)} - ${formatNumber(cas)} - ${formatNumber(cass)} = ${formatNumber(bazaImpozit)} → Impozit = 10% × ${formatNumber(bazaImpozit)} = ${formatCurrency(impozit)}`
+		};
+	}
+
+	function updatePraguri(an: number) {
+		const sm = SALARIU_MINIM[an as keyof typeof SALARIU_MINIM];
+		const prag6SM = 6 * sm;
+		const prag12SM = 12 * sm;
+		const prag24SM = 24 * sm;
+		const prag60SM = 60 * sm;
+
+		praguriInfo.innerHTML = `
+			<div class="prag-item">
+				<strong>6 SM</strong>
+				<span>${formatCurrency(prag6SM)}</span>
+				<small>Minim CASS (nesalariați)</small>
+			</div>
+			<div class="prag-item">
+				<strong>12 SM</strong>
+				<span>${formatCurrency(prag12SM)}</span>
+				<small>Prag minim CAS</small>
+			</div>
+			<div class="prag-item">
+				<strong>24 SM</strong>
+				<span>${formatCurrency(prag24SM)}</span>
+				<small>Plafon CAS</small>
+			</div>
+			<div class="prag-item">
+				<strong>60 SM</strong>
+				<span>${formatCurrency(prag60SM)}</span>
+				<small>Plafon CASS</small>
+			</div>
+		`;
 	}
 
 	function updateCalculations() {
-		const venitLunar = parseFloat(venitInput.value) || 0;
-		const venitAnual = venitLunar * 12;
-		const sistem = sistemSelect.value;
+		const an = parseInt(anSelect.value);
+		const esteSalariat = salariatSelect.value === 'da';
+		const venitBrut = parseFloat(venitBrutInput.value) || 0;
+		const cheltuieli = parseFloat(cheltuieliInput.value) || 0;
+		const venitNet = Math.max(0, venitBrut - cheltuieli);
 
-		let cass = 0;
-		let cas = 0;
-		let impozit = 0;
+		// Update preview
+		venitNetPreview.textContent = formatCurrency(venitNet);
 
-		if (sistem === 'real') {
-			cass = calculCASS(venitAnual);
-			cas = calculCAS(venitAnual);
-			impozit = calculImpozitReal(venitAnual);
-		} else {
-			const norma = parseFloat(normaInput.value) || 0;
-			impozit = calculImpozitNorma(venitAnual, norma);
-		}
+		// Calcule
+		const casResult = calculCAS(venitNet, an);
+		const cassResult = calculCASS(venitNet, an, esteSalariat);
+		const impozitResult = calculImpozit(venitNet, casResult.valoare, cassResult.valoare);
 
-		const totalTaxe = cass + cas + impozit;
-		const venitNet = venitAnual - totalTaxe;
+		const totalTaxe = casResult.valoare + cassResult.valoare + impozitResult.valoare;
+		const venitFinal = venitNet - totalTaxe;
+		const rataEfectiva = venitNet > 0 ? (totalTaxe / venitNet) * 100 : 0;
 
 		// Update UI
-		(document.getElementById('venit-anual') as HTMLElement).textContent = formatCurrency(venitAnual);
-		(document.getElementById('cass') as HTMLElement).textContent = formatCurrency(cass);
-		(document.getElementById('cas') as HTMLElement).textContent = formatCurrency(cas);
-		(document.getElementById('impozit') as HTMLElement).textContent = formatCurrency(impozit);
-		(document.getElementById('total-taxe') as HTMLElement).textContent = formatCurrency(totalTaxe);
 		(document.getElementById('venit-net') as HTMLElement).textContent = formatCurrency(venitNet);
+		(document.getElementById('cas') as HTMLElement).textContent = formatCurrency(casResult.valoare);
+		(document.getElementById('cas-detail') as HTMLElement).textContent = casResult.detalii;
+		(document.getElementById('cass') as HTMLElement).textContent = formatCurrency(cassResult.valoare);
+		(document.getElementById('cass-detail') as HTMLElement).textContent = cassResult.detalii;
+		(document.getElementById('impozit') as HTMLElement).textContent = formatCurrency(impozitResult.valoare);
+		(document.getElementById('impozit-detail') as HTMLElement).textContent = impozitResult.detalii;
+		(document.getElementById('total-taxe') as HTMLElement).textContent = formatCurrency(totalTaxe);
+		(document.getElementById('venit-final') as HTMLElement).textContent = formatCurrency(venitFinal);
+		(document.getElementById('rata-efectiva') as HTMLElement).textContent = `${rataEfectiva.toFixed(2)}%`;
+
+		// Update praguri
+		updatePraguri(an);
 	}
 
 	function formatCurrency(value: number): string {
@@ -173,16 +271,18 @@ function calculImpozitNorma(venit: number, norma: number): number {
 		}).format(value);
 	}
 
-	venitInput.addEventListener('input', updateCalculations);
-	sistemSelect.addEventListener('change', () => {
-		if (sistemSelect.value === 'norma') {
-			normaLabel.style.display = 'block';
-		} else {
-			normaLabel.style.display = 'none';
-		}
-		updateCalculations();
-	});
-	normaInput.addEventListener('input', updateCalculations);
+	function formatNumber(value: number): string {
+		return new Intl.NumberFormat('ro-RO', {
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		}).format(value);
+	}
+
+	// Event listeners
+	anSelect.addEventListener('change', updateCalculations);
+	salariatSelect.addEventListener('change', updateCalculations);
+	venitBrutInput.addEventListener('input', updateCalculations);
+	cheltuieliInput.addEventListener('input', updateCalculations);
 
 	// Initial calculation
 	updateCalculations();
@@ -201,6 +301,12 @@ function calculImpozitNorma(venit: number, norma: number): number {
 		gap: 1.5rem;
 	}
 
+	.input-group {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+
 	label {
 		display: flex;
 		flex-direction: column;
@@ -211,6 +317,12 @@ function calculImpozitNorma(venit: number, norma: number): number {
 		font-weight: 600;
 		color: #333;
 		font-size: 0.95rem;
+	}
+
+	label small {
+		font-size: 0.85rem;
+		color: #666;
+		margin-top: 0.25rem;
 	}
 
 	input[type="number"],
@@ -228,9 +340,29 @@ function calculImpozitNorma(venit: number, norma: number): number {
 		border-color: #667eea;
 	}
 
+	.info-box {
+		background: #f0f4ff;
+		border: 2px solid #667eea;
+		border-radius: 8px;
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.info-box strong {
+		color: #667eea;
+		font-size: 1.1rem;
+	}
+
+	.info-box small {
+		color: #666;
+		font-size: 0.85rem;
+	}
+
 	.results-section {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 		gap: 1rem;
 		margin-top: 1rem;
 	}
@@ -264,9 +396,15 @@ function calculImpozitNorma(venit: number, norma: number): number {
 		grid-column: 1 / -1;
 	}
 
+	.result-card.rate {
+		background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+		color: white;
+		grid-column: 1 / -1;
+	}
+
 	.result-card .label {
 		font-size: 0.9rem;
-		opacity: 0.8;
+		opacity: 0.9;
 		font-weight: 500;
 	}
 
@@ -276,18 +414,85 @@ function calculImpozitNorma(venit: number, norma: number): number {
 	}
 
 	.result-card.total .value,
-	.result-card.net .value {
+	.result-card.net .value,
+	.result-card.rate .value {
 		font-size: 2rem;
 	}
 
+	.result-card .detail {
+		font-size: 0.75rem;
+		opacity: 0.7;
+		margin-top: 0.5rem;
+		line-height: 1.4;
+	}
+
+	.result-card.total .detail,
+	.result-card.net .detail,
+	.result-card.rate .detail {
+		opacity: 0.9;
+	}
+
+	.praguri-section {
+		margin-top: 2rem;
+		padding-top: 2rem;
+		border-top: 2px solid #e0e0e0;
+	}
+
+	.praguri-section h3 {
+		margin-bottom: 1rem;
+		color: #333;
+		font-size: 1.2rem;
+	}
+
+	.praguri-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		gap: 1rem;
+	}
+
+	.prag-item {
+		background: #f8f9fa;
+		padding: 1rem;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		border: 2px solid #e0e0e0;
+	}
+
+	.prag-item strong {
+		color: #667eea;
+		font-size: 1.1rem;
+	}
+
+	.prag-item span {
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: #333;
+	}
+
+	.prag-item small {
+		font-size: 0.8rem;
+		color: #666;
+	}
+
 	@media (max-width: 768px) {
+		.input-group {
+			grid-template-columns: 1fr;
+		}
+
 		.results-section {
 			grid-template-columns: 1fr;
 		}
 
 		.result-card.total,
-		.result-card.net {
+		.result-card.net,
+		.result-card.rate {
 			grid-column: 1;
+		}
+
+		.praguri-grid {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>
