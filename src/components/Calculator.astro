@@ -22,6 +22,20 @@
 			</label>
 		</div>
 
+		<label for="luni-activitate">
+			<span>Număr de Luni de Activitate în An</span>
+			<input 
+				type="number" 
+				id="luni-activitate" 
+				name="luni-activitate"
+				value="12"
+				min="1"
+				max="12"
+				step="1"
+			/>
+			<small>Ex: dacă îți deschizi PFA în februarie, introdu 11 luni</small>
+		</label>
+
 		<label for="venit-brut">
 			<span>Venit Brut Lunar (RON)</span>
 			<input 
@@ -52,7 +66,7 @@
 
 		<div class="info-box">
 			<strong>Venit Net Anual:</strong> <span id="venit-net-preview">0 RON</span>
-			<small>(Venit Brut Lunar - Cheltuieli Lunare) × 12 luni</small>
+			<small id="info-luni">(Venit Brut Lunar - Cheltuieli Lunare) × <span id="luni-display">12</span> luni</small>
 		</div>
 	</div>
 
@@ -113,7 +127,9 @@
 	const salariatSelect = document.getElementById('salariat') as HTMLSelectElement;
 	const venitBrutInput = document.getElementById('venit-brut') as HTMLInputElement;
 	const cheltuieliInput = document.getElementById('cheltuieli') as HTMLInputElement;
+	const luniActivitateInput = document.getElementById('luni-activitate') as HTMLInputElement;
 	const venitNetPreview = document.getElementById('venit-net-preview') as HTMLElement;
+	const luniDisplay = document.getElementById('luni-display') as HTMLElement;
 	const praguriInfo = document.getElementById('praguri-info') as HTMLElement;
 
 	// Funcții de calcul conform documentației
@@ -237,10 +253,14 @@
 		const esteSalariat = salariatSelect.value === 'da';
 		const venitBrutLunar = parseFloat(venitBrutInput.value) || 0;
 		const cheltuieliLunare = parseFloat(cheltuieliInput.value) || 0;
+		const luniActivitate = parseInt(luniActivitateInput.value) || 12;
 		
-		// Calculăm anual
-		const venitBrutAnual = venitBrutLunar * 12;
-		const cheltuieliAnuale = cheltuieliLunare * 12;
+		// Actualizăm afișarea numărului de luni
+		luniDisplay.textContent = luniActivitate.toString();
+		
+		// Calculăm anual pe baza numărului real de luni
+		const venitBrutAnual = venitBrutLunar * luniActivitate;
+		const cheltuieliAnuale = cheltuieliLunare * luniActivitate;
 		const venitNet = Math.max(0, venitBrutAnual - cheltuieliAnuale);
 
 		// Update preview
@@ -253,7 +273,7 @@
 
 		const totalTaxe = casResult.valoare + cassResult.valoare + impozitResult.valoare;
 		const venitFinalAnual = venitNet - totalTaxe;
-		const venitFinalLunar = venitFinalAnual / 12;
+		const venitFinalLunar = luniActivitate > 0 ? venitFinalAnual / luniActivitate : 0;
 		const rataEfectiva = venitNet > 0 ? (totalTaxe / venitNet) * 100 : 0;
 
 		// Update UI
@@ -295,6 +315,7 @@
 	salariatSelect.addEventListener('change', updateCalculations);
 	venitBrutInput.addEventListener('input', updateCalculations);
 	cheltuieliInput.addEventListener('input', updateCalculations);
+	luniActivitateInput.addEventListener('input', updateCalculations);
 
 	// Initial calculation
 	updateCalculations();
