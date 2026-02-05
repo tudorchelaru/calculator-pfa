@@ -6,7 +6,8 @@
 	<div class="input-section">
 		<div class="input-group">
 			<label for="an">
-				<span>An</span>
+				<span class="lang-ro">An</span>
+				<span class="lang-en">Tax Year</span>
 				<select id="an" name="an">
 					<option value="2026" selected>2026</option>
 					<option value="2025">2025</option>
@@ -14,7 +15,8 @@
 			</label>
 
 			<label for="salariat">
-				<span>Ești salariat?</span>
+				<span class="lang-ro">Ești salariat?</span>
+				<span class="lang-en">Are you also an employee?</span>
 				<select id="salariat" name="salariat">
 					<option value="nu" selected>Nu</option>
 					<option value="da">Da</option>
@@ -23,7 +25,8 @@
 		</div>
 
 		<label for="luni-activitate">
-			<span>Număr de Luni de Activitate în An</span>
+			<span class="lang-ro">Număr de Luni de Activitate în An</span>
+			<span class="lang-en">Active Months in Tax Year</span>
 			<input 
 				type="number" 
 				id="luni-activitate" 
@@ -33,11 +36,49 @@
 				max="12"
 				step="1"
 			/>
-			<small>Ex: dacă îți deschizi PFA în februarie, introdu 11 luni</small>
+			<small>
+				<span class="lang-ro">Ex: dacă îți deschizi PFA în februarie, introdu 11 luni.</span>
+				<span class="lang-en">Example: if you open your PFA in February, use 11 months.</span>
+			</small>
 		</label>
 
-		<label for="venit-brut">
-			<span>Venit Brut Lunar (RON)</span>
+		<div class="lang-en exchange-rate-info">
+			<div class="exchange-rate-inputs">
+				<label for="exchange-usd" class="exchange-label">
+					<span>1 USD =</span>
+					<input 
+						type="number" 
+						id="exchange-usd" 
+						name="exchange-usd"
+						value="4.22"
+						min="0.01"
+						step="0.01"
+						class="exchange-input"
+					/>
+					<span>RON</span>
+				</label>
+				<label for="exchange-eur" class="exchange-label">
+					<span>1 EUR =</span>
+					<input 
+						type="number" 
+						id="exchange-eur" 
+						name="exchange-eur"
+						value="5.04"
+						min="0.01"
+						step="0.01"
+						class="exchange-input"
+					/>
+					<span>RON</span>
+				</label>
+			</div>
+		</div>
+		
+		<label for="venit-brut" class="venit-brut-label">
+			<div class="label-row">
+				<span class="lang-ro">Venit Brut Lunar (RON)</span>
+				<span class="lang-en">Gross Monthly Revenue (RON)</span>
+				<span class="lang-en usd-equivalent" id="usd-equivalent">≈ $0</span>
+			</div>
 			<input 
 				type="number" 
 				id="venit-brut" 
@@ -47,11 +88,15 @@
 				step="100"
 				placeholder="Ex: 10000"
 			/>
-			<small>Total încasări lunare din activitatea PFA</small>
+			<small>
+				<span class="lang-ro">Total încasări lunare din activitatea PFA.</span>
+				<span class="lang-en">Total business revenue per month before any expenses.</span>
+			</small>
 		</label>
 
 		<label for="cheltuieli">
-			<span>Cheltuieli Deductibile Lunar (RON)</span>
+			<span class="lang-ro">Cheltuieli Deductibile Lunar (RON)</span>
+			<span class="lang-en">Monthly Deductible Expenses (RON)</span>
 			<input 
 				type="number" 
 				id="cheltuieli" 
@@ -61,57 +106,117 @@
 				step="100"
 				placeholder="Ex: 1000"
 			/>
-			<small>Costuri lunare necesare desfășurării activității</small>
+			<small>
+				<span class="lang-ro">Costuri lunare necesare desfășurării activității.</span>
+				<span class="lang-en">Monthly business expenses that are tax‑deductible.</span>
+			</small>
 		</label>
 
 		<div class="info-box">
-			<strong>Venit Net Anual:</strong> <span id="venit-net-preview">0 RON</span>
-			<small id="info-luni">(Venit Brut Lunar - Cheltuieli Lunare) × <span id="luni-display">12</span> luni</small>
+			<strong>
+				<span class="lang-ro">Venit Net Anual:</span>
+				<span class="lang-en">Annual Net Income:</span>
+			</strong>
+			<span id="venit-net-preview">0 RON</span>
+			<small id="info-luni">
+				<span class="lang-ro">
+					(Venit Brut Lunar - Cheltuieli Lunare) × <span id="luni-display">12</span> luni.
+				</span>
+				<span class="lang-en">
+					(Gross Monthly Revenue − Monthly Expenses) × <span id="luni-display">12</span> active months.
+				</span>
+			</small>
 		</div>
 	</div>
 
 	<div class="results-section">
+		<div class="result-card final-monthly highlight">
+			<span class="label">
+				<span class="lang-ro">💰 Rămâne în Buzunar pe Lună</span>
+				<span class="lang-en">💰 Monthly Take‑Home Pay</span>
+			</span>
+			<span class="value" id="venit-lunar-final">0 RON</span>
+			<div class="currency-equivalents lang-en">
+				<span class="currency-usd" id="monthly-usd">≈ $0</span>
+				<span class="currency-eur" id="monthly-eur">≈ €0</span>
+			</div>
+			<span class="subtitle">
+				<span class="lang-ro">După toate taxele și cheltuielile.</span>
+				<span class="lang-en">After all Romanian self‑employment taxes and business expenses.</span>
+			</span>
+		</div>
+		<div class="result-card total">
+			<span class="label">
+				<span class="lang-ro">Total Taxe</span>
+				<span class="lang-en">Total Taxes</span>
+			</span>
+			<span class="value" id="total-taxe">0 RON</span>
+		</div>
+		<div class="result-card net">
+			<span class="label">
+				<span class="lang-ro">Venit Net După Taxe (Anual)</span>
+				<span class="lang-en">Annual Net After All Taxes</span>
+			</span>
+			<span class="value" id="venit-final">0 RON</span>
+		</div>
+		<div class="result-card rate">
+			<span class="label">
+				<span class="lang-ro">Rata Efectivă de Impozitare</span>
+				<span class="lang-en">Effective Tax Rate</span>
+			</span>
+			<span class="value" id="rata-efectiva">0%</span>
+		</div>
 		<div class="result-card">
-			<span class="label">Venit Net Anual</span>
+			<span class="label">
+				<span class="lang-ro">Venit Net Anual (înainte de taxe)</span>
+				<span class="lang-en">Annual Net Income (before taxes)</span>
+			</span>
 			<span class="value" id="venit-net">0 RON</span>
 		</div>
 		<div class="result-card">
-			<span class="label">CAS (25%)</span>
+			<span class="label">
+				<span class="lang-ro">CAS (25%) – contribuție pensie</span>
+				<span class="lang-en">CAS (25%) – pension contribution</span>
+			</span>
 			<span class="value" id="cas">0 RON</span>
 			<span class="detail" id="cas-detail"></span>
 		</div>
 		<div class="result-card">
-			<span class="label">CASS (10%)</span>
+			<span class="label">
+				<span class="lang-ro">CASS (10%) – contribuție sănătate</span>
+				<span class="lang-en">CASS (10%) – health insurance</span>
+			</span>
 			<span class="value" id="cass">0 RON</span>
 			<span class="detail" id="cass-detail"></span>
 		</div>
 		<div class="result-card">
-			<span class="label">Impozit pe Venit (10%)</span>
+			<span class="label">
+				<span class="lang-ro">Impozit pe Venit (10%)</span>
+				<span class="lang-en">Income Tax (10%)</span>
+			</span>
 			<span class="value" id="impozit">0 RON</span>
 			<span class="detail" id="impozit-detail"></span>
-		</div>
-		<div class="result-card total">
-			<span class="label">Total Taxe</span>
-			<span class="value" id="total-taxe">0 RON</span>
-		</div>
-		<div class="result-card net">
-			<span class="label">Venit Net După Taxe (Anual)</span>
-			<span class="value" id="venit-final">0 RON</span>
-		</div>
-		<div class="result-card final-monthly highlight">
-			<span class="label">💰 Rămâne în Buzunar pe Lună</span>
-			<span class="value" id="venit-lunar-final">0 RON</span>
-			<span class="subtitle">După toate taxele și cheltuielile</span>
-		</div>
-		<div class="result-card rate">
-			<span class="label">Rata Efectivă de Impozitare</span>
-			<span class="value" id="rata-efectiva">0%</span>
 		</div>
 	</div>
 
 	<div class="praguri-section">
-		<h3>Praguri pentru anul selectat</h3>
+		<h3>
+			<span class="lang-ro">Praguri pentru anul selectat</span>
+			<span class="lang-en">Thresholds for selected tax year</span>
+		</h3>
 		<div class="praguri-grid" id="praguri-info"></div>
+		
+		<div class="explanation-box lang-en">
+			<h4>📖 Understanding Romanian Tax Thresholds (for US readers)</h4>
+			<p><strong>SM = Minimum Wage</strong> (Salariu Minim). Romania uses minimum wage multiples to calculate tax caps.</p>
+			<ul>
+				<li><strong>6 SM (24,300 RON):</strong> If your annual net income is below this, you still pay a minimum health insurance (CASS) of 10% × 6 SM = 2,430 RON/year (only if you're NOT also an employee).</li>
+				<li><strong>12 SM (48,600 RON):</strong> Pension contribution (CAS) starts only if your income exceeds this threshold. Below 12 SM, you pay $0 in pension tax.</li>
+				<li><strong>24 SM (97,200 RON):</strong> Maximum cap for pension contribution calculation. Even if you earn more, CAS is calculated only on 24 × minimum wage.</li>
+				<li><strong>60 SM (243,000 RON):</strong> Maximum cap for health insurance. Above this income, CASS stops increasing (capped at 10% × 60 SM = 24,300 RON/year).</li>
+			</ul>
+			<p><strong>Why this matters:</strong> Unlike US self-employment tax (which is a flat % on all income), Romanian taxes have income brackets with caps. This calculator shows you exactly where you fall and what you'll pay.</p>
+		</div>
 	</div>
 </div>
 
@@ -122,6 +227,10 @@
 		2026: 4050
 	};
 
+	// Cursuri valutare - vor fi actualizate din input-uri
+	let EXCHANGE_RATE_USD_RON = 4.22;
+	let EXCHANGE_RATE_EUR_RON = 5.04;
+
 	// Elemente DOM
 	const anSelect = document.getElementById('an') as HTMLSelectElement;
 	const salariatSelect = document.getElementById('salariat') as HTMLSelectElement;
@@ -131,18 +240,54 @@
 	const venitNetPreview = document.getElementById('venit-net-preview') as HTMLElement;
 	const luniDisplay = document.getElementById('luni-display') as HTMLElement;
 	const praguriInfo = document.getElementById('praguri-info') as HTMLElement;
+	const exchangeUSDInput = document.getElementById('exchange-usd') as HTMLInputElement;
+	const exchangeEURInput = document.getElementById('exchange-eur') as HTMLInputElement;
+	const usdEquivalent = document.getElementById('usd-equivalent') as HTMLElement;
+	const monthlyUSD = document.getElementById('monthly-usd') as HTMLElement;
+	const monthlyEUR = document.getElementById('monthly-eur') as HTMLElement;
+
+	// Actualizăm cursurile din input-uri
+	function updateExchangeRates() {
+		EXCHANGE_RATE_USD_RON = parseFloat(exchangeUSDInput.value) || 4.22;
+		EXCHANGE_RATE_EUR_RON = parseFloat(exchangeEURInput.value) || 5.04;
+		updateUSDEquivalent();
+		updateCalculations();
+	}
+
+	// Funcție pentru actualizarea opțiunilor select-ului
+	function updateSelectOptions() {
+		const lang = getCurrentLang();
+		if (salariatSelect) {
+			const nuOption = salariatSelect.querySelector('option[value="nu"]') as HTMLOptionElement;
+			const daOption = salariatSelect.querySelector('option[value="da"]') as HTMLOptionElement;
+			if (nuOption && daOption) {
+				nuOption.textContent = lang === 'en' ? 'No' : 'Nu';
+				daOption.textContent = lang === 'en' ? 'Yes' : 'Da';
+			}
+		}
+	}
+
+	// Inițializăm cursurile din input-uri
+	updateExchangeRates();
 
 	// Funcții de calcul conform documentației
+	
+	function getCurrentLang(): 'ro' | 'en' {
+		return document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'ro';
+	}
 
 	function calculCAS(venitNet: number, an: number): { valoare: number; detalii: string } {
 		const sm = SALARIU_MINIM[an as keyof typeof SALARIU_MINIM];
 		const prag12SM = 12 * sm;
 		const prag24SM = 24 * sm;
+		const lang = getCurrentLang();
 
 		if (venitNet <= prag12SM) {
 			return {
 				valoare: 0,
-				detalii: `Sub 12 SM (${formatNumber(prag12SM)} RON) → CAS = 0`
+				detalii: lang === 'en' 
+					? `Below 12 SM (${formatNumber(prag12SM)} RON) → Pension tax = 0`
+					: `Sub 12 SM (${formatNumber(prag12SM)} RON) → CAS = 0`
 			};
 		}
 
@@ -150,14 +295,18 @@
 			const cas = 0.25 * prag12SM;
 			return {
 				valoare: cas,
-				detalii: `Între 12-24 SM → CAS = 25% × 12 SM = ${formatCurrency(cas)}`
+				detalii: lang === 'en'
+					? `Between 12-24 SM → Pension tax = 25% × 12 SM = ${formatCurrency(cas)}`
+					: `Între 12-24 SM → CAS = 25% × 12 SM = ${formatCurrency(cas)}`
 			};
 		}
 
 		const cas = 0.25 * prag24SM;
 		return {
 			valoare: cas,
-			detalii: `Peste 24 SM (${formatNumber(prag24SM)} RON) → CAS = 25% × 24 SM = ${formatCurrency(cas)} (plafon)`
+			detalii: lang === 'en'
+				? `Above 24 SM (${formatNumber(prag24SM)} RON) → Pension tax = 25% × 24 SM = ${formatCurrency(cas)} (capped)`
+				: `Peste 24 SM (${formatNumber(prag24SM)} RON) → CAS = 25% × 24 SM = ${formatCurrency(cas)} (plafon)`
 		};
 	}
 
@@ -165,6 +314,7 @@
 		const sm = SALARIU_MINIM[an as keyof typeof SALARIU_MINIM];
 		const prag6SM = 6 * sm;
 		const prag60SM = 60 * sm;
+		const lang = getCurrentLang();
 
 		// Sub 6 SM
 		if (venitNet < prag6SM) {
@@ -172,13 +322,17 @@
 				const cass = 0.10 * venitNet;
 				return {
 					valoare: cass,
-					detalii: `Sub 6 SM, salariat → CASS = 10% × venit net = ${formatCurrency(cass)} (fără minim)`
+					detalii: lang === 'en'
+						? `Below 6 SM, also an employee → Health insurance = 10% × net income = ${formatCurrency(cass)} (no minimum)`
+						: `Sub 6 SM, salariat → CASS = 10% × venit net = ${formatCurrency(cass)} (fără minim)`
 				};
 			} else {
 				const cassMinim = 0.10 * prag6SM;
 				return {
 					valoare: cassMinim,
-					detalii: `Sub 6 SM, nesalariat → CASS minim = 10% × 6 SM = ${formatCurrency(cassMinim)}`
+					detalii: lang === 'en'
+						? `Below 6 SM, not an employee → Minimum health insurance = 10% × 6 SM = ${formatCurrency(cassMinim)}`
+						: `Sub 6 SM, nesalariat → CASS minim = 10% × 6 SM = ${formatCurrency(cassMinim)}`
 				};
 			}
 		}
@@ -188,7 +342,9 @@
 			const cass = 0.10 * venitNet;
 			return {
 				valoare: cass,
-				detalii: `Între 6-60 SM → CASS = 10% × venit net = ${formatCurrency(cass)}`
+				detalii: lang === 'en'
+					? `Between 6-60 SM → Health insurance = 10% × net income = ${formatCurrency(cass)}`
+					: `Între 6-60 SM → CASS = 10% × venit net = ${formatCurrency(cass)}`
 			};
 		}
 
@@ -196,24 +352,31 @@
 		const cassPlafon = 0.10 * prag60SM;
 		return {
 			valoare: cassPlafon,
-			detalii: `Peste 60 SM (${formatNumber(prag60SM)} RON) → CASS plafon = 10% × 60 SM = ${formatCurrency(cassPlafon)}`
+			detalii: lang === 'en'
+				? `Above 60 SM (${formatNumber(prag60SM)} RON) → Health insurance capped = 10% × 60 SM = ${formatCurrency(cassPlafon)}`
+				: `Peste 60 SM (${formatNumber(prag60SM)} RON) → CASS plafon = 10% × 60 SM = ${formatCurrency(cassPlafon)}`
 		};
 	}
 
 	function calculImpozit(venitNet: number, cas: number, cass: number): { valoare: number; detalii: string } {
 		const bazaImpozit = Math.max(0, venitNet - cas - cass);
 		const impozit = 0.10 * bazaImpozit;
+		const lang = getCurrentLang();
 
 		if (bazaImpozit === 0) {
 			return {
 				valoare: 0,
-				detalii: `Baza impozit = venit net - CAS - CASS = ${formatNumber(venitNet)} - ${formatNumber(cas)} - ${formatNumber(cass)} = 0 (nu poate fi negativă)`
+				detalii: lang === 'en'
+					? `Tax base = net income - pension - health = ${formatNumber(venitNet)} - ${formatNumber(cas)} - ${formatNumber(cass)} = 0 (cannot be negative)`
+					: `Baza impozit = venit net - CAS - CASS = ${formatNumber(venitNet)} - ${formatNumber(cas)} - ${formatNumber(cass)} = 0 (nu poate fi negativă)`
 			};
 		}
 
 		return {
 			valoare: impozit,
-			detalii: `Baza = ${formatNumber(venitNet)} - ${formatNumber(cas)} - ${formatNumber(cass)} = ${formatNumber(bazaImpozit)} → Impozit = 10% × ${formatNumber(bazaImpozit)} = ${formatCurrency(impozit)}`
+			detalii: lang === 'en'
+				? `Tax base = ${formatNumber(venitNet)} - ${formatNumber(cas)} - ${formatNumber(cass)} = ${formatNumber(bazaImpozit)} → Income tax = 10% × ${formatNumber(bazaImpozit)} = ${formatCurrency(impozit)}`
+				: `Baza = ${formatNumber(venitNet)} - ${formatNumber(cas)} - ${formatNumber(cass)} = ${formatNumber(bazaImpozit)} → Impozit = 10% × ${formatNumber(bazaImpozit)} = ${formatCurrency(impozit)}`
 		};
 	}
 
@@ -223,27 +386,33 @@
 		const prag12SM = 12 * sm;
 		const prag24SM = 24 * sm;
 		const prag60SM = 60 * sm;
+		
+		const isEnglish = document.documentElement.getAttribute('data-lang') === 'en';
 
 		praguriInfo.innerHTML = `
 			<div class="prag-item">
 				<strong>6 SM</strong>
 				<span>${formatCurrency(prag6SM)}</span>
-				<small>Minim CASS (nesalariați)</small>
+				<small class="lang-ro">Minim CASS (nesalariați)</small>
+				<small class="lang-en">Min. health insurance (non-employees)</small>
 			</div>
 			<div class="prag-item">
 				<strong>12 SM</strong>
 				<span>${formatCurrency(prag12SM)}</span>
-				<small>Prag minim CAS</small>
+				<small class="lang-ro">Prag minim CAS</small>
+				<small class="lang-en">Pension tax starts here</small>
 			</div>
 			<div class="prag-item">
 				<strong>24 SM</strong>
 				<span>${formatCurrency(prag24SM)}</span>
-				<small>Plafon CAS</small>
+				<small class="lang-ro">Plafon CAS</small>
+				<small class="lang-en">Pension tax cap</small>
 			</div>
 			<div class="prag-item">
 				<strong>60 SM</strong>
 				<span>${formatCurrency(prag60SM)}</span>
-				<small>Plafon CASS</small>
+				<small class="lang-ro">Plafon CASS</small>
+				<small class="lang-en">Health insurance cap</small>
 			</div>
 		`;
 	}
@@ -290,6 +459,14 @@
 		(document.getElementById('venit-lunar-final') as HTMLElement).textContent = formatCurrency(venitFinalLunar);
 		(document.getElementById('rata-efectiva') as HTMLElement).textContent = `${rataEfectiva.toFixed(2)}%`;
 
+		// Update currency equivalents for monthly take-home
+		if (monthlyUSD && monthlyEUR) {
+			const usdValue = venitFinalLunar / EXCHANGE_RATE_USD_RON;
+			const eurValue = venitFinalLunar / EXCHANGE_RATE_EUR_RON;
+			monthlyUSD.textContent = `≈ ${formatUSD(usdValue)}`;
+			monthlyEUR.textContent = `≈ ${formatEUR(eurValue)}`;
+		}
+
 		// Update praguri
 		updatePraguri(an);
 	}
@@ -310,15 +487,59 @@
 		}).format(value);
 	}
 
+	function formatUSD(value: number): string {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		}).format(value);
+	}
+
+	function formatEUR(value: number): string {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'EUR',
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 0
+		}).format(value);
+	}
+
+	function updateUSDEquivalent() {
+		if (!usdEquivalent) return;
+		const venitBrutLunar = parseFloat(venitBrutInput.value) || 0;
+		const usdValue = venitBrutLunar / EXCHANGE_RATE_USD_RON;
+		usdEquivalent.textContent = `≈ ${formatUSD(usdValue)}`;
+	}
+
 	// Event listeners
 	anSelect.addEventListener('change', updateCalculations);
 	salariatSelect.addEventListener('change', updateCalculations);
-	venitBrutInput.addEventListener('input', updateCalculations);
+	venitBrutInput.addEventListener('input', () => {
+		updateCalculations();
+		updateUSDEquivalent();
+	});
 	cheltuieliInput.addEventListener('input', updateCalculations);
 	luniActivitateInput.addEventListener('input', updateCalculations);
+	exchangeUSDInput.addEventListener('input', updateExchangeRates);
+	exchangeEURInput.addEventListener('input', updateExchangeRates);
+
+	// Listen for language changes
+	const observer = new MutationObserver(() => {
+		updateCalculations();
+		updateSelectOptions();
+	});
+	observer.observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ['data-lang']
+	});
+
+	// Initial update
+	updateSelectOptions();
 
 	// Initial calculation
 	updateCalculations();
+	updateUSDEquivalent();
 </script>
 
 <style>
@@ -356,6 +577,72 @@
 		font-size: 0.85rem;
 		color: #666;
 		margin-top: 0.25rem;
+	}
+
+	.exchange-rate-info {
+		margin-bottom: 0.75rem;
+	}
+
+	.exchange-rate-inputs {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+		flex-wrap: nowrap;
+	}
+
+	.exchange-label {
+		display: inline-flex !important;
+		flex-direction: row !important;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.8rem;
+		color: #666;
+		font-weight: 500;
+		white-space: nowrap;
+		margin: 0;
+	}
+
+	.exchange-label:last-of-type {
+		margin-left: 30px;
+	}
+
+	.exchange-input {
+		width: 100px;
+		padding: 0.2rem 0.5rem;
+		border: 1.5px solid #e0e0e0;
+		border-radius: 4px;
+		font-size: 0.9rem;
+		text-align: center;
+		transition: border-color 0.2s;
+		line-height: 1.2;
+	}
+
+	.exchange-input:focus {
+		outline: none;
+		border-color: #667eea;
+		box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+	}
+
+	.label-row {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+		width: 100%;
+	}
+
+	.usd-equivalent {
+		font-size: 1.5rem;
+		color: #00ff88;
+		font-weight: 800;
+		margin-left: auto;
+		text-shadow: 0 2px 4px rgba(0, 255, 136, 0.4);
+		letter-spacing: 0.5px;
+	}
+
+	.venit-brut-label {
+		position: relative;
 	}
 
 	input[type="number"],
@@ -454,6 +741,39 @@
 		font-weight: 500;
 	}
 
+	.currency-equivalents {
+		display: flex;
+		gap: 1rem;
+		margin-top: 0.75rem;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+
+	.currency-usd,
+	.currency-eur {
+		font-size: 1.4rem;
+		font-weight: 900;
+		padding: 0.6rem 1rem;
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(10px);
+		border: 2px solid rgba(255, 255, 255, 1);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+		letter-spacing: 0.5px;
+	}
+
+	.currency-usd {
+		color: #059669;
+		text-shadow: none;
+	}
+
+	.currency-eur {
+		color: #1e40af;
+		text-shadow: none;
+	}
+
 	.result-card .label {
 		font-size: 0.9rem;
 		opacity: 0.9;
@@ -526,6 +846,43 @@
 	.prag-item small {
 		font-size: 0.8rem;
 		color: #666;
+		display: block;
+	}
+
+	.explanation-box {
+		margin-top: 2rem;
+		background: #f0f7ff;
+		border-left: 4px solid #667eea;
+		border-radius: 8px;
+		padding: 1.5rem;
+	}
+
+	.explanation-box h4 {
+		margin: 0 0 1rem 0;
+		color: #333;
+		font-size: 1.1rem;
+	}
+
+	.explanation-box p {
+		margin: 0.75rem 0;
+		color: #555;
+		line-height: 1.6;
+	}
+
+	.explanation-box ul {
+		margin: 1rem 0;
+		padding-left: 1.5rem;
+		color: #555;
+		line-height: 1.8;
+	}
+
+	.explanation-box li {
+		margin: 0.5rem 0;
+	}
+
+	.explanation-box strong {
+		color: #667eea;
+		font-weight: 600;
 	}
 
 	@media (max-width: 768px) {

@@ -7,7 +7,7 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="ro">
+<html lang="ro" data-lang="ro">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content="Calculator online pentru taxe PFA" />
@@ -17,7 +17,57 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
-		<slot />
+		<header class="top-bar">
+			<div class="top-bar-inner">
+				<div class="top-bar-spacer" />
+				<div class="lang-selector">
+					<button id="lang-ro" class="lang-flag" type="button" data-lang="ro" title="Română">
+						🇷🇴
+					</button>
+					<button id="lang-en" class="lang-flag" type="button" data-lang="en" title="English">
+						🇺🇸
+					</button>
+				</div>
+			</div>
+		</header>
+		<main class="page-root">
+			<slot />
+		</main>
+
+		<script>
+			const docEl = document.documentElement;
+			const btnRO = document.getElementById('lang-ro');
+			const btnEN = document.getElementById('lang-en');
+
+			function applyLang(lang: 'ro' | 'en') {
+				docEl.dataset.lang = lang;
+				docEl.lang = lang === 'ro' ? 'ro' : 'en';
+				
+				// Update active state
+				if (btnRO && btnEN) {
+					if (lang === 'ro') {
+						btnRO.classList.add('active');
+						btnEN.classList.remove('active');
+					} else {
+						btnRO.classList.remove('active');
+						btnEN.classList.add('active');
+					}
+				}
+			}
+
+			const initialLang = (localStorage.getItem('lang') as 'ro' | 'en') || 'ro';
+			applyLang(initialLang);
+
+			btnRO?.addEventListener('click', () => {
+				localStorage.setItem('lang', 'ro');
+				applyLang('ro');
+			});
+
+			btnEN?.addEventListener('click', () => {
+				localStorage.setItem('lang', 'en');
+				applyLang('en');
+			});
+		</script>
 	</body>
 </html>
 
@@ -34,5 +84,79 @@ const { title } = Astro.props;
 	body {
 		margin: 0;
 		padding: 0;
+	}
+
+	.page-root {
+		min-height: 100vh;
+	}
+
+	.top-bar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 50;
+		pointer-events: none;
+	}
+
+	.top-bar-inner {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		padding: 0.75rem 1.5rem;
+	}
+
+	.lang-selector {
+		display: flex;
+		gap: 0.5rem;
+		pointer-events: auto;
+		background: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(10px);
+		border-radius: 999px;
+		padding: 0.25rem;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.lang-flag {
+		pointer-events: auto;
+		border: none;
+		background: transparent;
+		font-size: 1.5rem;
+		width: 2.5rem;
+		height: 2.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		opacity: 0.6;
+		transform: scale(0.9);
+	}
+
+	.lang-flag:hover {
+		opacity: 1;
+		transform: scale(1);
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.lang-flag.active {
+		opacity: 1;
+		transform: scale(1.1);
+		background: rgba(255, 255, 255, 0.2);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	.lang-flag:active {
+		transform: scale(1);
+	}
+
+	/* Language visibility helpers */
+	:root[data-lang='ro'] .lang-en {
+		display: none !important;
+	}
+
+	:root[data-lang='en'] .lang-ro {
+		display: none !important;
 	}
 </style>

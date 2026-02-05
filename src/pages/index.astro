@@ -3,11 +3,22 @@ import Layout from '../layouts/Layout.astro';
 import Calculator from '../components/Calculator.astro';
 ---
 
-<Layout title="Calculator Taxe PFA">
+<Layout title="Calculator Taxe PFA / PFA Tax Calculator">
 	<main>
 		<div class="container">
-			<h1>Calculator Taxe PFA</h1>
-			<p class="subtitle">Calculează rapid taxele pentru PFA conform legislației 2025-2026</p>
+			<h1>
+				<span class="lang-ro">Calculator Taxe PFA</span>
+				<span class="lang-en">PFA Tax Calculator (Romanian Self‑Employment)</span>
+			</h1>
+			<p class="subtitle">
+				<span class="lang-ro">
+					Calculează rapid taxele pentru PFA conform legislației 2025-2026 și vezi cât îți rămâne în buzunar lunar.
+				</span>
+				<span class="lang-en">
+					Fast estimate of Romanian self‑employment taxes (pension, health, income tax) and your
+					<strong>monthly take‑home pay</strong>.
+				</span>
+			</p>
 			<Calculator />
 		</div>
 	</main>

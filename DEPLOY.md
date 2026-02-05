@@ -4,11 +4,12 @@ Acest ghid te ajută să urci proiectul pe Vercel fără să afectezi proiectul 
 
 ## ✅ Status Configurare
 
-- ✅ **Git Remote:** Deja configurat → `https://github.com/tudorchelaru/calculator-pfa.git`
 - ✅ **Vercel Config:** `vercel.json` este pregătit
+- ✅ **Git Local:** Repository local configurat
+- ✅ **Git Remote:** Configurat → `https://github.com/tudorchelaru/calculator-pfa.git`
 - ⏳ **Repository GitHub:** Trebuie creat (sau deja există)
 
-## 📋 Pași pentru Deployment
+## 📋 Workflow Deployment (ca la avocat-site)
 
 ### Pasul 1: Creează Repository pe GitHub (dacă nu există)
 
@@ -19,72 +20,68 @@ Acest ghid te ajută să urci proiectul pe Vercel fără să afectezi proiectul 
 5. **NU adăuga** README, .gitignore sau licență (le avem deja)
 6. **Click "Create repository"**
 
-### Pasul 2: Push Codul pe GitHub
+### Pasul 2: Push Codul pe GitHub (prima dată)
 
 ```bash
 cd /Users/tchelaru/dev/calculator-pfa
-git branch -M main
 git push -u origin main
 ```
 
-**Notă:** Dacă repository-ul este gol, GitHub va sugera comenzile. Folosește cele de mai sus.
-
-### Pasul 3: Deployment pe Vercel
-
-#### Opțiunea A: Via Dashboard (Recomandat) ⭐
+### Pasul 3: Conectează cu Vercel (prima dată)
 
 1. **Mergi pe [vercel.com](https://vercel.com)** și autentifică-te
-
-2. **Click pe "Add New..." → "Project"**
-
+2. **Click "Add New..." → "Project"**
 3. **Importă repository-ul:**
-   - Selectează repository-ul `tudorchelaru/calculator-pfa` din listă
-   - Dacă nu apare, click "Adjust GitHub App Permissions" și autorizează accesul
-   - **IMPORTANT:** Acest proiect este separat de `avocat-site` - nu se vor afecta reciproc
-
-4. **Configurează proiectul:**
-   - **Project Name:** `calculator-pfa` (sau alt nume unic)
-   - **Framework Preset:** Vercel detectează automat Astro
-   - **Root Directory:** `./` (lasă gol)
-   - **Build Command:** `npm run build` (deja setat)
-   - **Output Directory:** `dist` (deja setat)
-   - **Install Command:** `npm install` (deja setat)
-
+   - Selectează `tudorchelaru/calculator-pfa` din listă
+   - Dacă nu apare, click "Adjust GitHub App Permissions"
+4. **Configurează:**
+   - Project Name: `calculator-pfa`
+   - Vercel detectează automat Astro
 5. **Click "Deploy"**
 
-6. **Așteaptă build-ul** (1-2 minute)
+### Pasul 4: Workflow Normal (după prima configurare)
 
-7. **Gata!** Proiectul va fi live la un URL de tip: `calculator-pfa.vercel.app`
+**La fiecare modificare, folosește același workflow ca la avocat-site:**
 
-#### Opțiunea B: Via CLI
+```bash
+npm run build
+git add .
+git commit -m 'mesaj commit'
+git push
+```
 
-1. **Instalează Vercel CLI:**
-   ```bash
-   npm install -g vercel
-   ```
+**Vercel va face auto-deploy automat la fiecare push!** 🚀
 
-2. **Autentifică-te:**
-   ```bash
-   vercel login
-   ```
+## 🔄 Workflow Zilnic (după prima configurare)
 
-3. **Deploy:**
-   ```bash
-   vercel
-   ```
+**Exact ca la avocat-site:**
 
-4. **Răspunde la întrebări:**
-   - Set up and deploy? → **Y**
-   - Which scope? → Selectează contul tău
-   - Link to existing project? → **N** (pentru proiect nou)
-   - Project name? → `calculator-pfa` (sau alt nume)
-   - Directory? → `./` (Enter)
-   - Override settings? → **N**
+```bash
+# 1. Build local (opțional, pentru testare)
+npm run build
 
-5. **Pentru production:**
-   ```bash
-   vercel --prod
-   ```
+# 2. Adaugă modificările
+git add .
+
+# 3. Commit
+git commit -m 'descriere modificări'
+
+# 4. Push pe GitHub
+git push
+```
+
+**Vercel va detecta automat push-ul și va face deploy!** ✨
+
+## 🚀 Deployment Manual (dacă e nevoie)
+
+Dacă vrei să faci deploy manual (fără Git), poți folosi Vercel CLI:
+
+```bash
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
 
 ## ✅ Verificare
 
